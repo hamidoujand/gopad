@@ -3,4 +3,4 @@ tidy:
 	go mod vendor 
 
 run:
-	go run cmd/main.go 
+	go run cmd/main.go go.sum

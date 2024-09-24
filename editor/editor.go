@@ -2,6 +2,7 @@ package editor
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/nsf/termbox-go"
 )
@@ -11,13 +12,27 @@ func Run() error {
 		return fmt.Errorf("init: %w", err)
 	}
 
-	var rows int
-	var cols int
-	var offsetX int
-	var offsetY int
+	var (
+		rows       int
+		cols       int
+		offsetX    int
+		offsetY    int
+		sourceFile string
+	)
 
-	var textBuffer = [][]rune{
-		[]rune("Hello World!"),
+	var textBuffer = [][]rune{}
+	//fill the text buffer if any file provided.
+	if len(os.Args) > 1 {
+		sourceFile = os.Args[1]
+		var err error
+		textBuffer, err = readFile(sourceFile, textBuffer)
+		if err != nil {
+			return fmt.Errorf("read file: %w", err)
+		}
+	} else {
+		sourceFile = "out.txt"
+		//one line by default inside of buffer
+		textBuffer = append(textBuffer, []rune{})
 	}
 
 	//wait for user input
