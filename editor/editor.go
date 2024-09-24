@@ -7,6 +7,13 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+type mode int
+
+const (
+	view mode = 1
+	edit mode = 2
+)
+
 func Run() error {
 	if err := termbox.Init(); err != nil {
 		return fmt.Errorf("init: %w", err)
@@ -18,9 +25,17 @@ func Run() error {
 		offsetX    int
 		offsetY    int
 		sourceFile string
+		currentX   int
+		currentY   int
+		modified   bool
 	)
 
-	var textBuffer = [][]rune{}
+	var (
+		textBuffer = [][]rune{}
+		undoBuffer = [][]rune{}
+		copyBuffer = []rune{} //single line
+	)
+
 	//fill the text buffer if any file provided.
 	if len(os.Args) > 1 {
 		sourceFile = os.Args[1]
@@ -34,6 +49,7 @@ func Run() error {
 		//one line by default inside of buffer
 		textBuffer = append(textBuffer, []rune{})
 	}
+	mod := view
 
 	//wait for user input
 	for {
@@ -51,7 +67,7 @@ func Run() error {
 
 		//diplay text buffer buffer
 		displayTextBuffer(textBuffer, rows, cols, offsetX, offsetY)
-
+		displayStatusBar(mod, sourceFile, len(textBuffer), modified, currentX, currentY, len(copyBuffer), len(undoBuffer), cols, rows)
 		if err := termbox.Flush(); err != nil {
 			return fmt.Errorf("flush: %w", err)
 		}
