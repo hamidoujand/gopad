@@ -51,7 +51,6 @@ func Run() error {
 	}
 	mod := view
 	//wait for user input
-	var err error
 	for {
 		// printMessage(25, 11, termbox.ColorDefault, termbox.ColorDefault, "GOPAD - A bare bones text editor")
 		cols, rows = termbox.Size()
@@ -77,8 +76,7 @@ func Run() error {
 			return fmt.Errorf("flush: %w", err)
 		}
 
-		currentY, err = processKeyPress(currentY, len(textBuffer))
-		if err != nil {
+		if err := processKeyPress(&currentY, &currentX, textBuffer, rows); err != nil {
 			return fmt.Errorf("processKey: %w", err)
 		}
 	}

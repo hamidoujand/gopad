@@ -7,10 +7,10 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-func processKeyPress(currentRow int, textBuffLen int) (int, error) {
+func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalRows int) error {
 	keyEvent, err := getKey()
 	if err != nil {
-		return 0, fmt.Errorf("getKey: %w", err)
+		return fmt.Errorf("getKey: %w", err)
 	}
 
 	if keyEvent.Key == termbox.KeyEsc {
@@ -21,18 +21,45 @@ func processKeyPress(currentRow int, textBuffLen int) (int, error) {
 		//handle chars
 	} else {
 		switch keyEvent.Key {
+		case termbox.KeyHome:
+			*currentCol = 0
+		case termbox.KeyEnd:
+			*currentCol = len(textBuff[*currentRow])
+		case termbox.KeyPgup:
+			if *currentRow-(totalRows/4) > 0 {
+				*currentRow -= (totalRows / 4)
+			}
+		case termbox.KeyPgdn:
+			if *currentRow+(totalRows/4) < len(textBuff)-1 {
+				*currentRow += (totalRows / 4)
+			}
 		case termbox.KeyArrowUp:
-			if currentRow != 0 {
-				currentRow--
-				return currentRow, nil
+			if *currentRow != 0 {
+				*currentRow--
 			}
 		case termbox.KeyArrowDown:
-			if currentRow < textBuffLen-1 {
-				currentRow++
-				return currentRow, nil
+			if *currentRow < len(textBuff)-1 {
+				*currentRow++
 			}
+		case termbox.KeyArrowLeft:
+			if *currentCol != 0 {
+				*currentCol--
+			} else if *currentRow > 0 {
+				*currentRow--
+				*currentCol = len(textBuff[*currentRow])
+			}
+		case termbox.KeyArrowRight:
+			if *currentCol < len(textBuff[*currentRow]) {
+				*currentCol++
+			} else if *currentRow < len(textBuff)-1 {
+				*currentRow++
+				*currentCol = 0
+			}
+		}
+		if *currentCol > len(textBuff[*currentRow]) {
+			*currentCol = len(textBuff[*currentRow])
 		}
 	}
 
-	return currentRow, nil
+	return nil
 }

@@ -1,21 +1,19 @@
 package editor
 
 func scrollTextBuffer(currentRow int, offsetRow *int, currentCol int, offsetCol *int, totalRows int, totalCols int) {
-	offsetR := *offsetRow
-	offsetC := *offsetCol
-	if currentRow < offsetR {
+	if currentRow < *offsetRow {
 		*offsetRow = currentRow
 	}
 
-	if currentCol < offsetC {
+	if currentCol < *offsetCol {
 		*offsetCol = currentCol
 	}
 
-	if currentRow >= offsetR+totalRows {
+	if currentRow >= *offsetRow+totalRows {
 		*offsetRow = currentRow - totalRows + 1
 	}
 
-	if currentCol >= offsetC+totalCols {
+	if currentCol >= *offsetCol+totalCols {
 		*offsetCol = currentCol - totalCols + 1
 	}
 }
