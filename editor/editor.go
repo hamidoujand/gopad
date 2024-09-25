@@ -50,8 +50,8 @@ func Run() error {
 		textBuffer = append(textBuffer, []rune{})
 	}
 	mod := view
-
 	//wait for user input
+	var err error
 	for {
 		// printMessage(25, 11, termbox.ColorDefault, termbox.ColorDefault, "GOPAD - A bare bones text editor")
 		cols, rows = termbox.Size()
@@ -65,17 +65,21 @@ func Run() error {
 			return fmt.Errorf("clear: %w", err)
 		}
 
+		//scroll
+		scrollTextBuffer(currentY, &offsetY, currentX, &offsetX, rows, cols)
 		//diplay text buffer buffer
 		displayTextBuffer(textBuffer, rows, cols, offsetX, offsetY)
-		displayStatusBar(mod, sourceFile, len(textBuffer), modified, currentX, currentY, len(copyBuffer), len(undoBuffer), cols, rows)
+		displayStatusBar(mod, sourceFile, len(textBuffer), modified, currentY, currentX, len(copyBuffer), len(undoBuffer), cols, rows)
+
+		//current cursor pos
+		termbox.SetCursor(currentX-offsetX, currentY-offsetY)
 		if err := termbox.Flush(); err != nil {
 			return fmt.Errorf("flush: %w", err)
 		}
-		event := termbox.PollEvent()
-		if event.Type == termbox.EventKey && event.Key == termbox.KeyEsc {
-			termbox.Close()
-			break
+
+		currentY, err = processKeyPress(currentY, len(textBuffer))
+		if err != nil {
+			return fmt.Errorf("processKey: %w", err)
 		}
 	}
-	return nil
 }

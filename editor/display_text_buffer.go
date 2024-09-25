@@ -15,7 +15,7 @@ func displayTextBuffer(buff [][]rune, maxRows int, maxCols int, offsetX int, off
 				if buff[textBufferRow][textBufferCol] != '\t' {
 					termbox.SetChar(col, row, buff[textBufferRow][textBufferCol])
 				} else {
-					termbox.SetCell(col, row, ' ', termbox.ColorDefault, termbox.ColorGreen)
+					termbox.SetCell(col, row, ' ', termbox.ColorDefault, termbox.ColorBlack)
 				}
 			} else if row+offsetY > len(buff)-1 {
 				//print * when file empty
