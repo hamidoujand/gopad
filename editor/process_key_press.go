@@ -7,20 +7,41 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalRows int) error {
+func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalRows int, isModified *bool, currentMode *mode) error {
 	keyEvent, err := getKey()
 	if err != nil {
 		return fmt.Errorf("getKey: %w", err)
 	}
 
 	if keyEvent.Key == termbox.KeyEsc {
-		termbox.Close()
-		os.Exit(0)
+		*currentMode = view
 
 	} else if keyEvent.Ch != 0 {
 		//handle chars
+		if *currentMode == edit {
+			insertRune(keyEvent, textBuff, *currentRow, currentCol)
+			*isModified = true
+		} else {
+			switch keyEvent.Ch {
+			case 'q':
+				termbox.Close()
+				os.Exit(0)
+			case 'e':
+				*currentMode = edit
+			}
+		}
 	} else {
 		switch keyEvent.Key {
+		case termbox.KeyTab:
+			if *currentMode == edit {
+				insertRune(keyEvent, textBuff, *currentRow, currentCol)
+				*isModified = true
+			}
+		case termbox.KeySpace:
+			if *currentMode == edit {
+				insertRune(keyEvent, textBuff, *currentRow, currentCol)
+				*isModified = true
+			}
 		case termbox.KeyHome:
 			*currentCol = 0
 		case termbox.KeyEnd:
