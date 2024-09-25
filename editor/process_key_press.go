@@ -7,7 +7,7 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalRows int, isModified *bool, currentMode *mode) error {
+func processKeyPress(currentRow *int, currentCol *int, textBuff *[][]rune, totalRows int, isModified *bool, currentMode *mode) error {
 	keyEvent, err := getKey()
 	if err != nil {
 		return fmt.Errorf("getKey: %w", err)
@@ -19,7 +19,7 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalR
 	} else if keyEvent.Ch != 0 {
 		//handle chars
 		if *currentMode == edit {
-			insertRune(keyEvent, textBuff, *currentRow, currentCol)
+			insertRune(keyEvent, *textBuff, *currentRow, currentCol)
 			*isModified = true
 		} else {
 			switch keyEvent.Ch {
@@ -34,24 +34,34 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalR
 		switch keyEvent.Key {
 		case termbox.KeyTab:
 			if *currentMode == edit {
-				insertRune(keyEvent, textBuff, *currentRow, currentCol)
+				insertRune(keyEvent, *textBuff, *currentRow, currentCol)
 				*isModified = true
 			}
 		case termbox.KeySpace:
 			if *currentMode == edit {
-				insertRune(keyEvent, textBuff, *currentRow, currentCol)
+				insertRune(keyEvent, *textBuff, *currentRow, currentCol)
+				*isModified = true
+			}
+		case termbox.KeyBackspace:
+			if *currentMode == edit {
+				deleteRune(textBuff, currentRow, currentCol)
+				*isModified = true
+			}
+		case termbox.KeyBackspace2:
+			if *currentMode == edit {
+				deleteRune(textBuff, currentRow, currentCol)
 				*isModified = true
 			}
 		case termbox.KeyHome:
 			*currentCol = 0
 		case termbox.KeyEnd:
-			*currentCol = len(textBuff[*currentRow])
+			*currentCol = len((*textBuff)[*currentRow])
 		case termbox.KeyPgup:
 			if *currentRow-(totalRows/4) > 0 {
 				*currentRow -= (totalRows / 4)
 			}
 		case termbox.KeyPgdn:
-			if *currentRow+(totalRows/4) < len(textBuff)-1 {
+			if *currentRow+(totalRows/4) < len((*textBuff))-1 {
 				*currentRow += (totalRows / 4)
 			}
 		case termbox.KeyArrowUp:
@@ -59,7 +69,7 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalR
 				*currentRow--
 			}
 		case termbox.KeyArrowDown:
-			if *currentRow < len(textBuff)-1 {
+			if *currentRow < len((*textBuff))-1 {
 				*currentRow++
 			}
 		case termbox.KeyArrowLeft:
@@ -67,18 +77,18 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff [][]rune, totalR
 				*currentCol--
 			} else if *currentRow > 0 {
 				*currentRow--
-				*currentCol = len(textBuff[*currentRow])
+				*currentCol = len((*textBuff)[*currentRow])
 			}
 		case termbox.KeyArrowRight:
-			if *currentCol < len(textBuff[*currentRow]) {
+			if *currentCol < len((*textBuff)[*currentRow]) {
 				*currentCol++
-			} else if *currentRow < len(textBuff)-1 {
+			} else if *currentRow < len((*textBuff))-1 {
 				*currentRow++
 				*currentCol = 0
 			}
 		}
-		if *currentCol > len(textBuff[*currentRow]) {
-			*currentCol = len(textBuff[*currentRow])
+		if *currentCol > len((*textBuff)[*currentRow]) {
+			*currentCol = len((*textBuff)[*currentRow])
 		}
 	}
 
