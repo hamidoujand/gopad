@@ -32,6 +32,11 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff *[][]rune, total
 		}
 	} else {
 		switch keyEvent.Key {
+		case termbox.KeyEnter:
+			if *currentMode == edit {
+				insertLine(textBuff, currentCol, currentRow)
+				*isModified = true
+			}
 		case termbox.KeyTab:
 			if *currentMode == edit {
 				insertRune(keyEvent, *textBuff, *currentRow, currentCol)
