@@ -76,7 +76,7 @@ func Run() error {
 			return fmt.Errorf("flush: %w", err)
 		}
 
-		if err := processKeyPress(&currentY, &currentX, &textBuffer, rows, &modified, &mod); err != nil {
+		if err := processKeyPress(&currentY, &currentX, &textBuffer, rows, &modified, &mod, sourceFile); err != nil {
 			return fmt.Errorf("processKey: %w", err)
 		}
 	}
