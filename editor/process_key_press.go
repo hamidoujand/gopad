@@ -36,7 +36,10 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff *[][]rune, total
 				copyLine(textBuff, copyBuff, currentRow)
 			case 'p':
 				pasteLine(copyBuff, textBuff, currentRow, currentCol)
+			case 'x':
+				cutLine(textBuff, copyBuff, currentRow, currentCol)
 			}
+
 		}
 	} else {
 		switch keyEvent.Key {
