@@ -3,4 +3,4 @@ tidy:
 	go mod vendor 
 
 run:
-	go run ./cmd
+	go run ./cmd editor/editor.go
