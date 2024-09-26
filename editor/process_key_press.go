@@ -7,7 +7,7 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-func processKeyPress(currentRow *int, currentCol *int, textBuff *[][]rune, totalRows int, isModified *bool, currentMode *mode, filename string, copyBuff *[]rune) error {
+func processKeyPress(currentRow *int, currentCol *int, textBuff *[][]rune, totalRows int, isModified *bool, currentMode *mode, filename string, copyBuff *[]rune, undoBuff *[][]rune) error {
 	keyEvent, err := getKey()
 	if err != nil {
 		return fmt.Errorf("getKey: %w", err)
@@ -38,6 +38,10 @@ func processKeyPress(currentRow *int, currentCol *int, textBuff *[][]rune, total
 				pasteLine(copyBuff, textBuff, currentRow, currentCol)
 			case 'x':
 				cutLine(textBuff, copyBuff, currentRow, currentCol)
+			case 's':
+				pushBuffer(textBuff, undoBuff)
+			case 'l':
+				pullBuffer(undoBuff, textBuff)
 			}
 
 		}
