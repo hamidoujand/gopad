@@ -11,4 +11,5 @@ func pullBuffer(undoBuff *[][]rune, textBuff *[][]rune) {
 		return
 	}
 	*textBuff = *undoBuff
+	*undoBuff = nil
 }
